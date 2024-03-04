@@ -1,6 +1,6 @@
 const songModel = require("./song.model");
 const moment = require("moment");
-const statusCode = require("../configs/errorCodes.config");
+const statusCodes = require("../configs/errorCodes.config");
 const errorMessages = require("../errorMessages");
 const AlbumService = require("../album/album.service");
 const albumService = new AlbumService();
@@ -33,7 +33,7 @@ class SongService {
     const song = await songModel.findOne({ _id: songId });
     if (!song) {
       const error = new Error(errorMessages.songNotFound);
-      error.statusCode = statusCode.notFound;
+      error.statusCode = statusCodes.notFound;
       throw error;
     } else {
       return song;

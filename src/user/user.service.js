@@ -1,5 +1,5 @@
 const userModel = require("./user.model");
-const statusCode = require("../configs/errorCodes.config");
+const statusCodes = require("../configs/errorCodes.config");
 const errorMessages = require("../errorMessages");
 const moment = require("moment");
 const { SHA256 } = require("crypto-js");
@@ -10,7 +10,7 @@ class userService {
     const user = await userModel.findOne({ email: reqBody.email });
     if (user) {
       const error = new Error(errorMessages.emailAlreadyExist);
-      error.status = statusCode.conflict;
+      error.status = statusCodes.conflict;
       throw error;
     }
     await new userModel({
@@ -28,11 +28,11 @@ class userService {
     const user = await userModel.findOne({ email: reqBody.email });
     if (!user) {
       const error = new Error(errorMessages.incorrectCredentials);
-      error.status = statusCode.notAuthenticated;
+      error.status = statusCodes.notAuthenticated;
       throw error;
     } else if (user.password !== SHA256(reqBody.password).toString()) {
       const error = new Error(errorMessages.incorrectCredentials);
-      error.status = statusCode.notAuthenticated;
+      error.status = statusCodes.notAuthenticated;
       throw error;
     } else {
       const payload = {
