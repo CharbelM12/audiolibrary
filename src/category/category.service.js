@@ -1,35 +1,37 @@
 const categoryModel = require("./category.model");
-const statusCode = require("../errorCodes");
+const statusCodes = require("../configs/errorCodes.config");
+const errorMessages = require("../errorMessages");
 
 class categoryService {
   //A check was added to prevent from saving an existing category
-  async addCategory(categoryObject) {
+  async addCategory(reqBody, userId) {
     const foundCategoryName = await categoryModel.findOne({
-      name: categoryObject.name,
+      name: reqBody.name,
     });
     if (foundCategoryName) {
-      const error = new Error("The category already exists");
-      error.statusCode = statusCode.conflict;
+      const error = new Error(errorMessages.categoryAlreadyExists);
+      error.statusCode = statusCodes.conflict;
       throw error;
     } else {
-      return await new categoryModel({
-        name: categoryObject.name,
-        description: categoryObject.description,
+      await new categoryModel({
+        name: reqBody.name,
+        description: reqBody.description,
+        createdBy: userId,
       }).save();
     }
   }
   //this function was called in the addSong function in the song service.
   //It was used to check if the user entered an existing categoryId
   async getCategoryById(categoryId) {
-    const foundCategory = await categoryModel.findOne({
+    const category = await categoryModel.findOne({
       _id: categoryId,
     });
-    if (!foundCategory) {
-      const error = new Error("No category found");
-      error.statusCode = statusCode.notFound;
+    if (!category) {
+      const error = new Error(errorMessages.categoryNotFound);
+      error.statusCode = statusCodes.notFound;
       throw error;
     } else {
-      return foundCategory;
+      return category;
     }
   }
 }

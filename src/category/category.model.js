@@ -1,18 +1,29 @@
 const mongoose = require("mongoose");
+const config = require("../configs/config");
+
 const Schema = mongoose.Schema;
 
-//the required option was added because there is no validation
 const categorySchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
+    name: String,
+
+    description: String,
+
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: config.collections.userCollection,
     },
-    description: {
-      type: String,
-      required: true,
+
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: config.collections.userCollection,
     },
   },
-  { timestamps: true }
+  { timestamps: config.timestampsValue }
 );
-module.exports = mongoose.model("Category", categorySchema);
+categorySchema.index({ createdBy: 1 });
+categorySchema.index({ updatedBy: 1 });
+module.exports = mongoose.model(
+  config.collections.categoryCollection,
+  categorySchema
+);

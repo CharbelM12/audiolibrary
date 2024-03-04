@@ -1,25 +1,31 @@
 const mongoose = require("mongoose");
+const config = require("../configs/config");
+const songConfig = require("./song.config");
+
 const Schema = mongoose.Schema;
 
-//the required option was added because there is no validation
-const songSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const songSchema = new Schema(
+  {
+    name: String,
+
+    singer: String,
+
+    categoryId: {
+      type: Schema.Types.ObjectId,
+      ref: config.collections.categoryCollection,
+    },
+
+    albumId: {
+      type: Schema.Types.ObjectId,
+      ref: config.collections.albumCollection,
+    },
   },
-  singer: {
-    type: String,
-    required: true,
-  },
-  categoryId: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: "Category",
-  },
-  albumId: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: "Album",
-  },
-});
-module.exports = mongoose.model("Song", songSchema);
+  { timestamps: config.timestampsValue }
+);
+songSchema.index({ categoryId: 1 });
+songSchema.index({ albumId: 1 });
+
+module.exports = mongoose.model(
+  songConfig.collections.songCollection,
+  songSchema
+);

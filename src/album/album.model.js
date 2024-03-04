@@ -1,23 +1,36 @@
 const mongoose = require("mongoose");
+const config = require("../configs/config");
+
 const Schema = mongoose.Schema;
 
-//the required option was added because there is no validation
 const albumSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
+    name: String,
+
+    description: String,
+
     showNbTracks: {
       type: Boolean,
-      required: true,
+      default: false,
     },
+
     lastSongAddedAt: Date,
+
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: config.collections.userCollection,
+    },
+
+    updatedBy: {
+      type: Schema.Types.ObjectId,
+      ref: config.collections.userCollection,
+    },
   },
-  { timestamps: true }
+  { timestamps: config.timestampsValue }
 );
-module.exports = mongoose.model("Album", albumSchema);
+albumSchema.index({ createdBy: 1 });
+albumSchema.index({ updatedBy: 1 });
+module.exports = mongoose.model(
+  config.collections.albumCollection,
+  albumSchema
+);
